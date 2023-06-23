@@ -1,11 +1,10 @@
-import { Chessboard } from './assets/components/Chessboard';
+import Chessboard from './components/Chessboard';
 import './App.css';
 
-function App() {
+const App = () => {
   return (
     <div id='app'>
       <Chessboard>
-
       </Chessboard>
     </div>
   );

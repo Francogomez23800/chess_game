@@ -1,0 +1,19 @@
+.tile {
+    width: 75px;
+    height: 75px;
+    display: grid;
+    place-content: center;
+}
+
+.black-tile {
+    background-color: #573a2e;
+
+}
+
+.white-tile {
+    background-color: #fccc74;
+}
+
+.tile .chess-pieces{
+width: 80px;
+}
