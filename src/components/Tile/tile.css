@@ -15,5 +15,17 @@
 }
 
 .tile .chess-pieces{
-width: 80px;
+    width: 100px;
+    height: 100px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 60px;
+}
+
+.tile .chess-pieces:hover{
+    cursor:grab
+}
+
+.tile .chess-pieces:active{
+    cursor:grabbing
 }
