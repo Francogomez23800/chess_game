@@ -45,61 +45,95 @@ initialBoardState.push({ image: "assets/images/king_b.png", x: 4, y: 7 });
 initialBoardState.push({ image: "assets/images/king_w.png", x: 3, y: 0 });
 
 const Chessboard = () => {
-  const [pieces, setPieces] = useState(initialBoardState)
-  const chessboardRef =useRef(null)
-  let activePiece = null;
+  const [activePiece, setActivePiece] =useState(null)
+  const [gridX, setGridX] = useState();
+  const [gridY, setGridY] = useState();
+  const [pieces, setPieces] = useState(initialBoardState);
+  const chessboardRef = useRef(null);
+ 
 
+  function getPosition(clientX, clientY) {
+    const chessboard = chessboardRef.current;
+    const chessboardRect = chessboard.getBoundingClientRect();
+
+    const offsetX = clientX - chessboardRect.left;
+    const offsetY = clientY - chessboardRect.top - 600;
+
+    const tileX = Math.floor(offsetX / 75);
+    const tileY = Math.abs(Math.ceil(offsetY / 75));
+
+    return { x: tileX, y: tileY };
+  }
 
   function grabPiece(e) {
     const element = e.target;
-  
-    if (element.classList.contains("chess-pieces")) {
+    const chessboard = chessboardRef.current;
+
+    if (element.classList.contains("chess-pieces") && chessboard) {
+      const { x, y } = getPosition(e.clientX, e.clientY);
+      setGridX(x);
+      setGridY(y);
+      const X = e.clientX - 50;
+      const Y = e.clientY - 50;
+      element.style.position = "absolute";
+      element.style.left = `${X}px`;
+      element.style.top = `${Y}px`;
+
+      setActivePiece(element)
+
+    }
+  }
+
+  function movePiece(e) {
+    const chessboard = chessboardRef.current;
+
+    if (activePiece && chessboard) {
+      const minX = chessboard.offsetLeft - 25;
+      const minY = chessboard.offsetTop - 25;
+      const maxX = chessboard.offsetLeft + chessboard.offsetWidth - 75;
+      const maxY = chessboard.offsetTop + chessboard.offsetHeight - 75;
       const x = e.clientX - 50;
       const y = e.clientY - 50;
-      element.style.position = "absolute";
-      element.style.left = `${x}px`;
-      element.style.top = `${y}px`;
-  
-      activePiece = element;
+      activePiece.style.position = "absolute";
+
+      if (x < minX) {
+        activePiece.style.left = `${minX}px`;
+      } else if (x > maxX) {
+        activePiece.style.left = `${maxX}px`;
+      } else {
+        activePiece.style.left = `${x}px`;
+      }
+
+      if (y < minY) {
+        activePiece.style.top = `${minY}px`;
+      } else if (y > maxY) {
+        activePiece.style.top = `${maxY}px`;
+      } else {
+        activePiece.style.top = `${y}px`;
+      }
     }
   }
-  
-function movePiece(e) {
-  const chessboard = chessboardRef.current;
 
-  if (activePiece && chessboard) {
-    const minX = chessboard.offsetLeft - 25;
-    const minY = chessboard.offsetTop - 25;
-    const maxX = chessboard.offsetLeft + chessboard.offsetWidth - 75;
-    const maxY = chessboard.offsetTop + chessboard.offsetHeight - 75;
-    const x = e.clientX - 50;
-    const y = e.clientY - 50;
-    activePiece.style.position = 'absolute';
-
-    if (x < minX) {
-      activePiece.style.left = `${minX}px`;
-    } else if (x > maxX) {
-      activePiece.style.left = `${maxX}px`;
-    } else {
-      activePiece.style.left = `${x}px`;
-    }
-
-    if (y < minY) {
-      activePiece.style.top = `${minY}px`;
-    } else if (y > maxY) {
-      activePiece.style.top = `${maxY}px`;
-    } else {
-      activePiece.style.top = `${y}px`;
-    }
-  }
-}
-  
   function dropPiece(e) {
-    if (activePiece) {
-      activePiece = null;
+    const chessboard = chessboardRef.current;
+    const { x, y } = getPosition(e.clientX, e.clientY);
+    console.log(x, y);
+
+    if (activePiece && chessboard) {
+      setPieces((value) => {
+        const pieces = value.map((p) => {
+          if (p.x === gridX && p.y === gridY) {
+            p.x = x;
+            p.y = y;
+          }
+          return p;
+        });
+        return pieces;
+      });
+      setActivePiece(null);
     }
   }
-  
+
   let board = [];
 
   for (let j = verticalAxis.length - 1; j >= 0; j--) {
@@ -130,4 +164,5 @@ function movePiece(e) {
     </div>
   );
 };
+
 export default Chessboard;
